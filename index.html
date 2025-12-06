@@ -6,7 +6,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --primary: #d9232d;  /* rojo Xtreme */
+      --primary: #d9232d;
       --primary-soft: #ffe5e7;
       --dark: #222;
       --bg: #f2f4f7;
@@ -15,11 +15,7 @@
       --text-muted: #777;
       --border-radius: 14px;
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
@@ -30,7 +26,6 @@
       height: 100vh;
       overflow: hidden;
     }
-
     header {
       background: var(--dark);
       color: #fff;
@@ -41,44 +36,23 @@
       justify-content: space-between;
       gap: 20px;
     }
+    header .title-block { display: flex; flex-direction: column; gap: 4px; }
+    header h1 { margin: 0; font-size: 22px; }
+    header p { margin: 0; font-size: 12px; color: #ccc; }
+    header .logo { height: 40px; }
 
-    header .title-block {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    header p {
-      margin: 0;
-      font-size: 12px;
-      color: #ccc;
-    }
-
-    header .logo {
-      height: 40px;
-    }
-
-    /* Layout principal */
     main {
       flex: 1;
       overflow-y: auto;
       padding: 20px 30px 40px;
       max-width: calc(100% - 320px);
     }
-
     aside {
       width: 320px;
       background: var(--dark);
       color: white;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      align-items: stretch;
       padding: 20px;
       box-shadow: -2px 0 6px rgba(0,0,0,0.3);
       position: fixed;
@@ -87,15 +61,13 @@
       bottom: 0;
       overflow-y: auto;
     }
-
     aside h2 {
       font-size: 18px;
-      margin: 0 0 10px 0;
+      margin: 0 0 10px;
       text-align: center;
       border-bottom: 1px solid rgba(255,255,255,0.2);
       padding-bottom: 8px;
     }
-
     .cost-card {
       background: rgba(255,255,255,0.1);
       border-radius: 12px;
@@ -103,63 +75,26 @@
       margin-bottom: 10px;
       text-align: center;
     }
+    .cost-card h3 { font-size: 13px; margin: 0; color: #ccc; }
+    .cost-card p { margin: 4px 0 0; font-size: 20px; font-weight: bold; color: #fff; }
 
-    .cost-card h3 {
-      font-size: 13px;
-      margin: 0;
-      color: #ccc;
-    }
-
-    .cost-card p {
-      margin: 4px 0 0 0;
-      font-size: 20px;
-      font-weight: bold;
-      color: #fff;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1.2fr 1.3fr;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
+    .grid-2 { display: grid; grid-template-columns: 1.2fr 1.3fr; gap: 20px; margin-bottom: 20px; }
     .card {
       background: var(--card-bg);
       border-radius: var(--border-radius);
       padding: 16px 18px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
+    .card h2 { margin: 0 0 10px; font-size: 16px; display: flex; justify-content: space-between; }
+    .card h2 span { font-size: 11px; color: var(--text-muted); }
 
-    .card h2 {
-      margin: 0 0 10px;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .card h2 span {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    /* Formulario */
     form {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 8px 14px;
       margin-top: 10px;
-      align-items: flex-start;
     }
-
-    label {
-      font-size: 12px;
-      color: var(--text-muted);
-      display: block;
-      margin-bottom: 2px;
-    }
-
+    label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 2px; }
     input, select {
       width: 100%;
       padding: 5px 8px;
@@ -167,76 +102,22 @@
       border: 1px solid #ddd;
       font-size: 12px;
     }
-
-    .actions {
-      grid-column: 1 / -1;
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    button {
-      border-radius: 999px;
-      border: none;
-      padding: 7px 14px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
+    .actions { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 4px; }
+    button { border-radius: 999px; border: none; padding: 7px 14px; font-size: 12px; cursor: pointer; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: #eee; color: var(--dark); }
     .btn-danger { background: #b3261e; color: white; }
 
-    /* Filtros y tabla */
-    .filters {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .table-wrapper {
-      max-height: 300px;
-      overflow: auto;
-      border-radius: 10px;
-      border: 1px solid #eee;
-      margin-top: 6px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-
-    th, td {
-      padding: 6px 8px;
-      border-bottom: 1px solid #f0f0f0;
-      text-align: left;
-    }
-
+    .filters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+    .table-wrapper { max-height: 300px; overflow: auto; border-radius: 10px; border: 1px solid #eee; margin-top: 6px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 6px 8px; border-bottom: 1px solid #f0f0f0; text-align: left; }
     th { font-weight: 600; color: var(--text-muted); }
-
     tbody tr:nth-child(even) { background: #fcfcfc; }
 
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-top: 10px;
-    }
-
-    .chart-card {
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      padding: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    }
-
-    canvas {
-      width: 100% !important;
-      height: 230px !important;
-    }
+    .charts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 10px; }
+    .chart-card { background: var(--card-bg); border-radius: var(--border-radius); padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    canvas { width: 100% !important; height: 230px !important; }
 
     @media (max-width: 1200px) {
       aside { display: none; }
@@ -245,28 +126,17 @@
   </style>
 </head>
 <body>
-  <!-- Panel lateral -->
   <aside id="panel-costos">
     <h2>Resumen de Costos 💰</h2>
-    <div class="cost-card">
-      <h3>Gasto total</h3>
-      <p id="cost-total">-</p>
-    </div>
-    <div class="cost-card">
-      <h3>Compras registradas</h3>
-      <p id="cost-compras">-</p>
-    </div>
-    <div class="cost-card">
-      <h3>Promedio por compra</h3>
-      <p id="cost-promedio">-</p>
-    </div>
-    <div class="cost-card">
-      <h3>Repuestos distintos</h3>
-      <p id="cost-repuestos">-</p>
-    </div>
-    <div class="cost-card">
-      <h3>Proveedores distintos</h3>
-      <p id="cost-proveedores">-</p>
+    <div class="cost-card"><h3>Gasto total</h3><p id="cost-total">-</p></div>
+    <div class="cost-card"><h3>Compras registradas</h3><p id="cost-compras">-</p></div>
+    <div class="cost-card"><h3>Promedio por compra</h3><p id="cost-promedio">-</p></div>
+    <div class="cost-card"><h3>Repuestos distintos</h3><p id="cost-repuestos">-</p></div>
+    <div class="cost-card"><h3>Proveedores distintos</h3><p id="cost-proveedores">-</p></div>
+    <hr style="border:0.5px solid rgba(255,255,255,0.2); margin:8px 0;">
+    <div class="cost-card" style="background:rgba(255,255,255,0.15);">
+      <h3>Elemento seleccionado</h3>
+      <p id="cost-item">-</p>
     </div>
   </aside>
 
@@ -276,45 +146,24 @@
         <h1>Dashboard Compras y Repuestos</h1>
         <p>Control de gastos por repuesto, proveedor y fecha – Xtreme</p>
       </div>
-      <img src="logo_extreme.png" alt="Logo Xtreme" class="logo">
+      <img src="logo_Xtreme.png" alt="Logo Xtreme" class="logo">
     </header>
 
     <div class="grid-2">
       <section class="card">
-        <h2>Ingreso de compra <span>Guardado en navegador</span></h2>
+        <h2>Ingreso de compra <span>Guardado localmente</span></h2>
         <form id="form-compra">
-          <div>
-            <label>Fecha</label>
-            <input type="date" id="fecha" required>
-          </div>
-          <div>
-            <label>N° Parte</label>
-            <input type="text" id="nroParte" placeholder="Ej: 123-ABC" required>
-          </div>
-          <div class="full-width">
-            <label>Descripción</label>
-            <input type="text" id="descripcion" placeholder="Ej: Manguera hidráulica 3/4">
-          </div>
-          <div>
-            <label>Cantidad</label>
-            <input type="number" id="cantidad" value="1" min="1">
-          </div>
-          <div>
-            <label>Valor Unitario</label>
-            <input type="number" id="valorUnitario" min="0" step="100">
-          </div>
-          <div>
-            <label>Proveedor</label>
-            <input type="text" id="proveedor" placeholder="Ej: Epiroc">
-          </div>
-          <div>
-            <label>Tipo de compra</label>
-            <select id="tipoCompra">
-              <option value="Repuesto">Repuesto</option>
-              <option value="Servicio">Servicio</option>
-              <option value="Consumible">Consumible</option>
-            </select>
-          </div>
+          <div><label>Fecha</label><input type="date" id="fecha" required></div>
+          <div><label>N° Parte</label><input type="text" id="nroParte" required></div>
+          <div class="full-width"><label>Descripción</label><input type="text" id="descripcion"></div>
+          <div><label>Cantidad</label><input type="number" id="cantidad" value="1" min="1"></div>
+          <div><label>Valor Unitario</label><input type="number" id="valorUnitario" min="0"></div>
+          <div><label>Proveedor</label><input type="text" id="proveedor"></div>
+          <div><label>Tipo</label><select id="tipoCompra">
+            <option value="Repuesto">Repuesto</option>
+            <option value="Servicio">Servicio</option>
+            <option value="Consumible">Consumible</option>
+          </select></div>
           <div class="actions">
             <button class="btn-primary">➕ Agregar</button>
             <button type="button" id="btn-exportar" class="btn-secondary">⬇ Exportar</button>
@@ -326,8 +175,8 @@
       <section class="card">
         <h2>Filtros y registros</h2>
         <div class="filters">
-          <input type="date" id="filtroDesde" placeholder="Desde">
-          <input type="date" id="filtroHasta" placeholder="Hasta">
+          <input type="date" id="filtroDesde">
+          <input type="date" id="filtroHasta">
           <input type="text" id="filtroTexto" placeholder="Buscar repuesto">
           <input type="text" id="filtroProveedor" placeholder="Proveedor">
         </div>
@@ -335,12 +184,7 @@
           <table>
             <thead>
               <tr>
-                <th>Fecha</th>
-                <th>N° Parte</th>
-                <th>Descripción</th>
-                <th>Proveedor</th>
-                <th>Cant.</th>
-                <th>Valor Total</th>
+                <th>Fecha</th><th>N° Parte</th><th>Descripción</th><th>Proveedor</th><th>Cant.</th><th>Valor Total</th>
               </tr>
             </thead>
             <tbody id="tabla-body"></tbody>
@@ -359,127 +203,111 @@
   <script>
     const STORAGE_KEY = 'comprasRepuestosData';
     let compras = [];
+    let chartRepuesto, chartProveedor, chartMes;
 
     function load() {
       const raw = localStorage.getItem(STORAGE_KEY);
       compras = raw ? JSON.parse(raw) : [];
     }
-
-    function save() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(compras));
-    }
-
-    function format(v) { return v.toLocaleString('es-CL'); }
-
-    function updateTable() {
-      const body = document.getElementById('tabla-body');
-      body.innerHTML = '';
-      const desde = document.getElementById('filtroDesde').value;
-      const hasta = document.getElementById('filtroHasta').value;
-      const texto = document.getElementById('filtroTexto').value.toLowerCase();
-      const prov = document.getElementById('filtroProveedor').value.toLowerCase();
-
-      const filtradas = compras.filter(c => {
-        if (desde && c.fecha < desde) return false;
-        if (hasta && c.fecha > hasta) return false;
-        if (texto && !(c.descripcion.toLowerCase().includes(texto) || c.nroParte.toLowerCase().includes(texto))) return false;
-        if (prov && !(c.proveedor.toLowerCase().includes(prov))) return false;
-        return true;
-      });
-
-      filtradas.forEach(c => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${c.fecha}</td>
-          <td>${c.nroParte}</td>
-          <td>${c.descripcion}</td>
-          <td>${c.proveedor}</td>
-          <td>${c.cantidad}</td>
-          <td>${format(c.valorTotal)}</td>`;
-        body.appendChild(tr);
-      });
-
-      updateCostPanel(filtradas);
-      drawCharts(filtradas);
-    }
-
-    function updateCostPanel(list) {
-      const total = list.reduce((a,b)=>a+b.valorTotal,0);
-      const comprasCount = list.length;
-      const promedio = comprasCount ? total / comprasCount : 0;
-      const repuestos = new Set(list.map(l=>l.nroParte)).size;
-      const proveedores = new Set(list.map(l=>l.proveedor)).size;
-
-      document.getElementById('cost-total').textContent = format(total);
-      document.getElementById('cost-compras').textContent = comprasCount;
-      document.getElementById('cost-promedio').textContent = format(promedio);
-      document.getElementById('cost-repuestos').textContent = repuestos;
-      document.getElementById('cost-proveedores').textContent = proveedores;
-    }
+    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(compras)); }
+    function format(v){return v.toLocaleString('es-CL');}
 
     function addCompra(e){
       e.preventDefault();
-      const fecha = document.getElementById('fecha').value;
-      const nroParte = document.getElementById('nroParte').value;
-      const descripcion = document.getElementById('descripcion').value;
-      const cantidad = parseInt(document.getElementById('cantidad').value);
-      const valorUnitario = parseFloat(document.getElementById('valorUnitario').value);
-      const proveedor = document.getElementById('proveedor').value;
-      const tipoCompra = document.getElementById('tipoCompra').value;
-      const valorTotal = cantidad * valorUnitario;
-
-      if(!fecha || !nroParte) return alert('Complete los campos mínimos');
-
-      compras.push({fecha,nroParte,descripcion,cantidad,valorUnitario,valorTotal,proveedor,tipoCompra});
-      save();
-      updateTable();
-      e.target.reset();
+      const fecha=document.getElementById('fecha').value;
+      const nroParte=document.getElementById('nroParte').value;
+      const descripcion=document.getElementById('descripcion').value;
+      const cantidad=parseInt(document.getElementById('cantidad').value);
+      const valorUnitario=parseFloat(document.getElementById('valorUnitario').value);
+      const proveedor=document.getElementById('proveedor').value;
+      const tipo=document.getElementById('tipoCompra').value;
+      const valorTotal=cantidad*valorUnitario;
+      if(!fecha||!nroParte) return alert('Complete los campos requeridos.');
+      compras.push({fecha,nroParte,descripcion,cantidad,valorUnitario,valorTotal,proveedor,tipo});
+      save(); updateTable(); e.target.reset();
     }
 
     function exportCSV(){
-      let csv = 'Fecha;N°Parte;Descripción;Cantidad;ValorUnitario;ValorTotal;Proveedor;Tipo\n';
-      compras.forEach(c=>{
-        csv+=`${c.fecha};${c.nroParte};${c.descripcion};${c.cantidad};${c.valorUnitario};${c.valorTotal};${c.proveedor};${c.tipoCompra}\n`;
+      if(!compras.length)return alert('No hay datos.');
+      let csv='Fecha;NroParte;Descripcion;Cantidad;ValorUnitario;ValorTotal;Proveedor;Tipo\n';
+      compras.forEach(c=>csv+=`${c.fecha};${c.nroParte};${c.descripcion};${c.cantidad};${c.valorUnitario};${c.valorTotal};${c.proveedor};${c.tipo}\n`);
+      const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);a.download='compras.csv';a.click();
+    }
+
+    function clearAll(){if(confirm('¿Borrar todos los datos?')){compras=[];save();updateTable();}}
+
+    function updateTable(){
+      const body=document.getElementById('tabla-body');body.innerHTML='';
+      const desde=document.getElementById('filtroDesde').value;
+      const hasta=document.getElementById('filtroHasta').value;
+      const texto=document.getElementById('filtroTexto').value.toLowerCase();
+      const prov=document.getElementById('filtroProveedor').value.toLowerCase();
+      const filtradas=compras.filter(c=>{
+        if(desde&&c.fecha<desde)return false;
+        if(hasta&&c.fecha>hasta)return false;
+        if(texto&&!`${c.nroParte} ${c.descripcion}`.toLowerCase().includes(texto))return false;
+        if(prov&&!c.proveedor.toLowerCase().includes(prov))return false;
+        return true;
       });
-      const blob = new Blob([csv],{type:'text/csv'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download='compras.csv';
-      a.click();
+      filtradas.forEach(c=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${c.fecha}</td><td>${c.nroParte}</td><td>${c.descripcion}</td><td>${c.proveedor}</td><td>${c.cantidad}</td><td>${format(c.valorTotal)}</td>`;
+        body.appendChild(tr);
+      });
+      updateCostPanel(filtradas); drawCharts(filtradas);
     }
 
-    function clearAll(){
-      if(!confirm('¿Borrar todos los datos?'))return;
-      compras=[];
-      save();
-      updateTable();
+    function updateCostPanel(list){
+      const total=list.reduce((a,b)=>a+b.valorTotal,0);
+      const comprasCount=list.length;
+      const promedio=comprasCount?total/comprasCount:0;
+      const repuestos=new Set(list.map(l=>l.nroParte)).size;
+      const proveedores=new Set(list.map(l=>l.proveedor)).size;
+      document.getElementById('cost-total').textContent=format(total);
+      document.getElementById('cost-compras').textContent=comprasCount;
+      document.getElementById('cost-promedio').textContent=format(promedio);
+      document.getElementById('cost-repuestos').textContent=repuestos;
+      document.getElementById('cost-proveedores').textContent=proveedores;
+      document.getElementById('cost-item').textContent='-';
     }
 
-    let chart1,chart2,chart3;
     function drawCharts(list){
-      if(chart1)chart1.destroy(); if(chart2)chart2.destroy(); if(chart3)chart3.destroy();
-      const rep={}; list.forEach(c=>rep[c.nroParte]=(rep[c.nroParte]||0)+c.valorTotal);
-      chart1=new Chart(document.getElementById('chartRepuesto'),{
-        type:'bar',
-        data:{labels:Object.keys(rep),datasets:[{data:Object.values(rep),label:'Por repuesto'}]},
-        options:{plugins:{legend:{display:false}}}
-      });
+      if(chartRepuesto)chartRepuesto.destroy();
+      if(chartProveedor)chartProveedor.destroy();
+      if(chartMes)chartMes.destroy();
 
-      const mes={}; list.forEach(c=>{
-        const d=new Date(c.fecha);const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      const rep={},prov={},mes={};
+      list.forEach(c=>{
+        rep[c.nroParte]=(rep[c.nroParte]||0)+c.valorTotal;
+        prov[c.proveedor]=(prov[c.proveedor]||0)+c.valorTotal;
+        const d=new Date(c.fecha);
+        const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
         mes[key]=(mes[key]||0)+c.valorTotal;
       });
-      chart2=new Chart(document.getElementById('chartMes'),{
-        type:'line',
-        data:{labels:Object.keys(mes),datasets:[{data:Object.values(mes),label:'Por mes',fill:false,tension:0.2}]},
-        options:{plugins:{legend:{display:false}}}
+
+      chartRepuesto=new Chart(document.getElementById('chartRepuesto'),{
+        type:'bar',
+        data:{labels:Object.keys(rep),datasets:[{data:Object.values(rep),label:'Por repuesto',backgroundColor:'rgba(217,35,45,0.7)'}]},
+        options:{plugins:{legend:{display:false}},onClick:(evt,els)=>{
+          if(els.length){const i=els[0].index;const key=Object.keys(rep)[i];
+            document.getElementById('cost-item').textContent=`${key}: $${format(rep[key])}`;}
+        }}
       });
 
-      const prov={}; list.forEach(c=>prov[c.proveedor]=(prov[c.proveedor]||0)+c.valorTotal);
-      chart3=new Chart(document.getElementById('chartProveedor'),{
+      chartProveedor=new Chart(document.getElementById('chartProveedor'),{
         type:'pie',
-        data:{labels:Object.keys(prov),datasets:[{data:Object.values(prov)}]},
-        options:{plugins:{legend:{position:'bottom'}}}
+        data:{labels:Object.keys(prov),datasets:[{data:Object.values(prov),backgroundColor:['#d9232d','#ff6b6b','#ffa3a3','#ffcccc','#ffe5e7']}]},
+        options:{plugins:{legend:{position:'bottom'}},onClick:(evt,els)=>{
+          if(els.length){const i=els[0].index;const key=Object.keys(prov)[i];
+            document.getElementById('cost-item').textContent=`${key}: $${format(prov[key])}`;}
+        }}
+      });
+
+      chartMes=new Chart(document.getElementById('chartMes'),{
+        type:'line',
+        data:{labels:Object.keys(mes),datasets:[{data:Object.values(mes),label:'Por mes',borderColor:'#d9232d',fill:false,tension:0.2}]},
+        options:{plugins:{legend:{display:false}}}
       });
     }
 
