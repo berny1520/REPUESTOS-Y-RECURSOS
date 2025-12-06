@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Dashboard Compras y Repuestos – Xtreme</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <style>
     :root {
       --primary: #d9232d;
@@ -94,6 +95,7 @@
       gap: 8px 14px;
       margin-top: 10px;
     }
+    .full-width { grid-column: 1 / -1; }
     label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 2px; }
     input, select {
       width: 100%;
@@ -102,18 +104,22 @@
       border: 1px solid #ddd;
       font-size: 12px;
     }
-    .actions { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 4px; }
+    .actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
     button { border-radius: 999px; border: none; padding: 7px 14px; font-size: 12px; cursor: pointer; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: #eee; color: var(--dark); }
     .btn-danger { background: #b3261e; color: white; }
 
-    .filters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+    .filters { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
+    .filters label { font-size: 11px; margin-bottom: 2px; }
+    .filters div { display: flex; flex-direction: column; }
+
     .table-wrapper { max-height: 300px; overflow: auto; border-radius: 10px; border: 1px solid #eee; margin-top: 6px; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th, td { padding: 6px 8px; border-bottom: 1px solid #f0f0f0; text-align: left; }
+    th, td { padding: 6px 8px; border-bottom: 1px solid #f0f0f0; text-align: left; white-space: nowrap; }
     th { font-weight: 600; color: var(--text-muted); }
     tbody tr:nth-child(even) { background: #fcfcfc; }
+    tbody tr:hover { background: #ffe5e7; cursor: pointer; }
 
     .charts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 10px; }
     .chart-card { background: var(--card-bg); border-radius: var(--border-radius); padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
@@ -126,6 +132,7 @@
   </style>
 </head>
 <body>
+  <!-- Panel lateral -->
   <aside id="panel-costos">
     <h2>Resumen de Costos 💰</h2>
     <div class="cost-card"><h3>Gasto total</h3><p id="cost-total">-</p></div>
@@ -144,181 +151,428 @@
     <header>
       <div class="title-block">
         <h1>Dashboard Compras y Repuestos</h1>
-        <p>Control de gastos por repuesto, proveedor y fecha – Xtreme</p>
+        <p>Control de gastos por contrato, repuesto, proveedor y fecha – Xtreme</p>
       </div>
-      <img src="logo_Xtreme.png" alt="Logo Xtreme" class="logo">
+      <!-- Asegúrate de que logo_extreme.png esté en la misma carpeta -->
+      <img src="logo_extreme.png" alt="Logo Xtreme" class="logo">
     </header>
 
     <div class="grid-2">
+      <!-- Formulario -->
       <section class="card">
-        <h2>Ingreso de compra <span>Guardado localmente</span></h2>
+        <h2>Ingreso de compra <span>Guardado localmente (localStorage)</span></h2>
         <form id="form-compra">
-          <div><label>Fecha</label><input type="date" id="fecha" required></div>
-          <div><label>N° Parte</label><input type="text" id="nroParte" required></div>
-          <div class="full-width"><label>Descripción</label><input type="text" id="descripcion"></div>
-          <div><label>Cantidad</label><input type="number" id="cantidad" value="1" min="1"></div>
-          <div><label>Valor Unitario</label><input type="number" id="valorUnitario" min="0"></div>
-          <div><label>Proveedor</label><input type="text" id="proveedor"></div>
-          <div><label>Tipo</label><select id="tipoCompra">
-            <option value="Repuesto">Repuesto</option>
-            <option value="Servicio">Servicio</option>
-            <option value="Consumible">Consumible</option>
-          </select></div>
+          <div>
+            <label>Fecha</label>
+            <input type="date" id="fecha" required>
+          </div>
+          <div>
+            <label>Contrato</label>
+            <select id="contrato" required>
+              <option value="">Seleccione...</option>
+              <option value="Xtreme Teniente">Xtreme Teniente</option>
+              <option value="Xtreme Andina">Xtreme Andina</option>
+              <option value="Xtreme Chuquicamata">Xtreme Chuquicamata</option>
+              <option value="Xtreme Carpetas">Xtreme Carpetas</option>
+            </select>
+          </div>
+          <div>
+            <label>N° Parte</label>
+            <input type="text" id="nroParte" required>
+          </div>
+          <div>
+            <label>Tipo</label>
+            <select id="tipoCompra">
+              <option value="Repuesto">Repuesto</option>
+              <option value="Servicio">Servicio</option>
+              <option value="Consumible">Consumible</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="full-width">
+            <label>Descripción</label>
+            <input type="text" id="descripcion">
+          </div>
+          <div>
+            <label>Cantidad</label>
+            <input type="number" id="cantidad" value="1" min="1">
+          </div>
+          <div>
+            <label>Valor Unitario</label>
+            <input type="number" id="valorUnitario" min="0">
+          </div>
+          <div>
+            <label>Proveedor</label>
+            <input type="text" id="proveedor">
+          </div>
+          <div></div>
           <div class="actions">
-            <button class="btn-primary">➕ Agregar</button>
-            <button type="button" id="btn-exportar" class="btn-secondary">⬇ Exportar</button>
-            <button type="button" id="btn-borrar-todo" class="btn-danger">🗑 Borrar</button>
+            <button type="submit" id="btn-guardar" class="btn-primary">➕ Agregar</button>
+            <button type="button" id="btn-cancelar-edicion" class="btn-secondary" style="display:none;">↩ Cancelar edición</button>
+            <button type="button" id="btn-exportar-excel" class="btn-secondary">⬇ Excel (CSV)</button>
+            <button type="button" id="btn-exportar-pdf" class="btn-secondary">⬇ PDF</button>
+            <button type="button" id="btn-borrar-todo" class="btn-danger">🗑 Borrar todo</button>
           </div>
         </form>
       </section>
 
+      <!-- Filtros + tabla -->
       <section class="card">
         <h2>Filtros y registros</h2>
         <div class="filters">
-          <input type="date" id="filtroDesde">
-          <input type="date" id="filtroHasta">
-          <input type="text" id="filtroTexto" placeholder="Buscar repuesto">
-          <input type="text" id="filtroProveedor" placeholder="Proveedor">
+          <div>
+            <label>Fecha desde</label>
+            <input type="date" id="filtroDesde">
+          </div>
+          <div>
+            <label>Fecha hasta</label>
+            <input type="date" id="filtroHasta">
+          </div>
+          <div>
+            <label>Contrato</label>
+            <select id="filtroContrato">
+              <option value="">Todos</option>
+              <option value="Xtreme Teniente">Xtreme Teniente</option>
+              <option value="Xtreme Andina">Xtreme Andina</option>
+              <option value="Xtreme Chuquicamata">Xtreme Chuquicamata</option>
+              <option value="Xtreme Carpetas">Xtreme Carpetas</option>
+            </select>
+          </div>
+          <div>
+            <label>Repuesto / desc.</label>
+            <input type="text" id="filtroTexto" placeholder="N° parte o descripción">
+          </div>
+          <div>
+            <label>Proveedor</label>
+            <input type="text" id="filtroProveedor" placeholder="Proveedor">
+          </div>
         </div>
+
         <div class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th>Fecha</th><th>N° Parte</th><th>Descripción</th><th>Proveedor</th><th>Cant.</th><th>Valor Total</th>
+                <th>Fecha</th>
+                <th>Contrato</th>
+                <th>N° Parte</th>
+                <th>Descripción</th>
+                <th>Proveedor</th>
+                <th>Cant.</th>
+                <th>V. Unitario</th>
+                <th>V. Total</th>
               </tr>
             </thead>
             <tbody id="tabla-body"></tbody>
           </table>
         </div>
+        <small>Tip: haz clic en una fila para editar ese registro.</small>
       </section>
     </div>
 
+    <!-- Gráficos -->
     <section class="charts-grid">
-      <div class="chart-card"><canvas id="chartRepuesto"></canvas></div>
-      <div class="chart-card"><canvas id="chartMes"></canvas></div>
-      <div class="chart-card"><canvas id="chartProveedor"></canvas></div>
+      <div class="chart-card">
+        <h3>Gasto por repuesto (N° parte)</h3>
+        <canvas id="chartRepuesto"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Evolución de gasto por mes</h3>
+        <canvas id="chartMes"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Gasto por proveedor</h3>
+        <canvas id="chartProveedor"></canvas>
+      </div>
     </section>
   </main>
 
   <script>
-    const STORAGE_KEY = 'comprasRepuestosData';
+    const STORAGE_KEY = 'comprasRepuestosData_v2';
     let compras = [];
-    let chartRepuesto, chartProveedor, chartMes;
+    let editingId = null;
+
+    let chartRepuesto, chartMes, chartProveedor;
 
     function load() {
       const raw = localStorage.getItem(STORAGE_KEY);
-      compras = raw ? JSON.parse(raw) : [];
+      try {
+        compras = raw ? JSON.parse(raw) : [];
+      } catch {
+        compras = [];
+      }
     }
-    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(compras)); }
-    function format(v){return v.toLocaleString('es-CL');}
-
-    function addCompra(e){
-      e.preventDefault();
-      const fecha=document.getElementById('fecha').value;
-      const nroParte=document.getElementById('nroParte').value;
-      const descripcion=document.getElementById('descripcion').value;
-      const cantidad=parseInt(document.getElementById('cantidad').value);
-      const valorUnitario=parseFloat(document.getElementById('valorUnitario').value);
-      const proveedor=document.getElementById('proveedor').value;
-      const tipo=document.getElementById('tipoCompra').value;
-      const valorTotal=cantidad*valorUnitario;
-      if(!fecha||!nroParte) return alert('Complete los campos requeridos.');
-      compras.push({fecha,nroParte,descripcion,cantidad,valorUnitario,valorTotal,proveedor,tipo});
-      save(); updateTable(); e.target.reset();
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(compras));
+    }
+    function formatNumber(v) {
+      if (isNaN(v)) return '-';
+      return v.toLocaleString('es-CL', { minimumFractionDigits: 0 });
     }
 
-    function exportCSV(){
-      if(!compras.length)return alert('No hay datos.');
-      let csv='Fecha;NroParte;Descripcion;Cantidad;ValorUnitario;ValorTotal;Proveedor;Tipo\n';
-      compras.forEach(c=>csv+=`${c.fecha};${c.nroParte};${c.descripcion};${c.cantidad};${c.valorUnitario};${c.valorTotal};${c.proveedor};${c.tipo}\n`);
-      const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');
-      a.href=URL.createObjectURL(blob);a.download='compras.csv';a.click();
-    }
+    function getFilteredList() {
+      const desde = document.getElementById('filtroDesde').value;
+      const hasta = document.getElementById('filtroHasta').value;
+      const fContrato = document.getElementById('filtroContrato').value;
+      const texto = document.getElementById('filtroTexto').value.toLowerCase();
+      const prov = document.getElementById('filtroProveedor').value.toLowerCase();
 
-    function clearAll(){if(confirm('¿Borrar todos los datos?')){compras=[];save();updateTable();}}
-
-    function updateTable(){
-      const body=document.getElementById('tabla-body');body.innerHTML='';
-      const desde=document.getElementById('filtroDesde').value;
-      const hasta=document.getElementById('filtroHasta').value;
-      const texto=document.getElementById('filtroTexto').value.toLowerCase();
-      const prov=document.getElementById('filtroProveedor').value.toLowerCase();
-      const filtradas=compras.filter(c=>{
-        if(desde&&c.fecha<desde)return false;
-        if(hasta&&c.fecha>hasta)return false;
-        if(texto&&!`${c.nroParte} ${c.descripcion}`.toLowerCase().includes(texto))return false;
-        if(prov&&!c.proveedor.toLowerCase().includes(prov))return false;
+      return compras.filter(c => {
+        if (desde && c.fecha < desde) return false;
+        if (hasta && c.fecha > hasta) return false;
+        if (fContrato && c.contrato !== fContrato) return false;
+        if (texto && !(c.nroParte.toLowerCase().includes(texto) || (c.descripcion || '').toLowerCase().includes(texto))) return false;
+        if (prov && !(c.proveedor || '').toLowerCase().includes(prov)) return false;
         return true;
       });
-      filtradas.forEach(c=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${c.fecha}</td><td>${c.nroParte}</td><td>${c.descripcion}</td><td>${c.proveedor}</td><td>${c.cantidad}</td><td>${format(c.valorTotal)}</td>`;
+    }
+
+    function updateTable() {
+      const body = document.getElementById('tabla-body');
+      body.innerHTML = '';
+      const list = getFilteredList();
+
+      list.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.dataset.id = c.id;
+        tr.innerHTML = `
+          <td>${c.fecha}</td>
+          <td>${c.contrato}</td>
+          <td>${c.nroParte}</td>
+          <td>${c.descripcion || ''}</td>
+          <td>${c.proveedor || ''}</td>
+          <td>${c.cantidad}</td>
+          <td>${formatNumber(c.valorUnitario)}</td>
+          <td>${formatNumber(c.valorTotal)}</td>
+        `;
         body.appendChild(tr);
       });
-      updateCostPanel(filtradas); drawCharts(filtradas);
+
+      updateCostPanel(list);
+      drawCharts(list);
     }
 
-    function updateCostPanel(list){
-      const total=list.reduce((a,b)=>a+b.valorTotal,0);
-      const comprasCount=list.length;
-      const promedio=comprasCount?total/comprasCount:0;
-      const repuestos=new Set(list.map(l=>l.nroParte)).size;
-      const proveedores=new Set(list.map(l=>l.proveedor)).size;
-      document.getElementById('cost-total').textContent=format(total);
-      document.getElementById('cost-compras').textContent=comprasCount;
-      document.getElementById('cost-promedio').textContent=format(promedio);
-      document.getElementById('cost-repuestos').textContent=repuestos;
-      document.getElementById('cost-proveedores').textContent=proveedores;
-      document.getElementById('cost-item').textContent='-';
+    function updateCostPanel(list) {
+      const total = list.reduce((a,b)=>a + (b.valorTotal || 0), 0);
+      const comprasCount = list.length;
+      const promedio = comprasCount ? total / comprasCount : 0;
+      const repuestos = new Set(list.map(l=>l.nroParte)).size;
+      const proveedores = new Set(list.map(l=>l.proveedor || 'Sin proveedor')).size;
+
+      document.getElementById('cost-total').textContent = formatNumber(total);
+      document.getElementById('cost-compras').textContent = comprasCount;
+      document.getElementById('cost-promedio').textContent = formatNumber(promedio);
+      document.getElementById('cost-repuestos').textContent = repuestos;
+      document.getElementById('cost-proveedores').textContent = proveedores;
+      document.getElementById('cost-item').textContent = '-';
     }
 
-    function drawCharts(list){
-      if(chartRepuesto)chartRepuesto.destroy();
-      if(chartProveedor)chartProveedor.destroy();
-      if(chartMes)chartMes.destroy();
+    function drawCharts(list) {
+      if (chartRepuesto) chartRepuesto.destroy();
+      if (chartMes) chartMes.destroy();
+      if (chartProveedor) chartProveedor.destroy();
 
-      const rep={},prov={},mes={};
-      list.forEach(c=>{
-        rep[c.nroParte]=(rep[c.nroParte]||0)+c.valorTotal;
-        prov[c.proveedor]=(prov[c.proveedor]||0)+c.valorTotal;
-        const d=new Date(c.fecha);
-        const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        mes[key]=(mes[key]||0)+c.valorTotal;
+      const porRepuesto = {};
+      const porMes = {};
+      const porProveedor = {};
+
+      list.forEach(c => {
+        porRepuesto[c.nroParte] = (porRepuesto[c.nroParte] || 0) + c.valorTotal;
+        const d = new Date(c.fecha);
+        const claveMes = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        porMes[claveMes] = (porMes[claveMes] || 0) + c.valorTotal;
+        const prov = c.proveedor || 'Sin proveedor';
+        porProveedor[prov] = (porProveedor[prov] || 0) + c.valorTotal;
       });
 
-      chartRepuesto=new Chart(document.getElementById('chartRepuesto'),{
-        type:'bar',
-        data:{labels:Object.keys(rep),datasets:[{data:Object.values(rep),label:'Por repuesto',backgroundColor:'rgba(217,35,45,0.7)'}]},
-        options:{plugins:{legend:{display:false}},onClick:(evt,els)=>{
-          if(els.length){const i=els[0].index;const key=Object.keys(rep)[i];
-            document.getElementById('cost-item').textContent=`${key}: $${format(rep[key])}`;}
-        }}
+      const repKeys = Object.keys(porRepuesto);
+      const repVals = Object.values(porRepuesto);
+      const mesKeys = Object.keys(porMes);
+      const mesVals = Object.values(porMes);
+      const provKeys = Object.keys(porProveedor);
+      const provVals = Object.values(porProveedor);
+
+      const ctxRep = document.getElementById('chartRepuesto').getContext('2d');
+      chartRepuesto = new Chart(ctxRep, {
+        type: 'bar',
+        data: { labels: repKeys, datasets: [{ data: repVals, label: 'Por repuesto' }] },
+        options: {
+          plugins: { legend: { display: false } },
+          onClick: (evt, els) => {
+            if (els.length) {
+              const i = els[0].index;
+              const key = repKeys[i];
+              document.getElementById('cost-item').textContent =
+                `Repuesto ${key}: $${formatNumber(porRepuesto[key])}`;
+            }
+          },
+          scales: { y: { beginAtZero: true } }
+        }
       });
 
-      chartProveedor=new Chart(document.getElementById('chartProveedor'),{
-        type:'pie',
-        data:{labels:Object.keys(prov),datasets:[{data:Object.values(prov),backgroundColor:['#d9232d','#ff6b6b','#ffa3a3','#ffcccc','#ffe5e7']}]},
-        options:{plugins:{legend:{position:'bottom'}},onClick:(evt,els)=>{
-          if(els.length){const i=els[0].index;const key=Object.keys(prov)[i];
-            document.getElementById('cost-item').textContent=`${key}: $${format(prov[key])}`;}
-        }}
+      const ctxMes = document.getElementById('chartMes').getContext('2d');
+      chartMes = new Chart(ctxMes, {
+        type: 'line',
+        data: { labels: mesKeys, datasets: [{ data: mesVals, label: 'Por mes', fill: false, tension: 0.2 }] },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
       });
 
-      chartMes=new Chart(document.getElementById('chartMes'),{
-        type:'line',
-        data:{labels:Object.keys(mes),datasets:[{data:Object.values(mes),label:'Por mes',borderColor:'#d9232d',fill:false,tension:0.2}]},
-        options:{plugins:{legend:{display:false}}}
+      const ctxProv = document.getElementById('chartProveedor').getContext('2d');
+      chartProveedor = new Chart(ctxProv, {
+        type: 'pie',
+        data: { labels: provKeys, datasets: [{ data: provVals }] },
+        options: {
+          plugins: { legend: { position: 'bottom' } },
+          onClick: (evt, els) => {
+            if (els.length) {
+              const i = els[0].index;
+              const key = provKeys[i];
+              document.getElementById('cost-item').textContent =
+                `Proveedor ${key}: $${formatNumber(porProveedor[key])}`;
+            }
+          }
+        }
       });
     }
 
-    document.addEventListener('DOMContentLoaded',()=>{
+    function resetFormEditing() {
+      editingId = null;
+      document.getElementById('form-compra').reset();
+      document.getElementById('btn-guardar').textContent = '➕ Agregar';
+      document.getElementById('btn-cancelar-edicion').style.display = 'none';
+    }
+
+    function onSubmitForm(e) {
+      e.preventDefault();
+      const fecha = document.getElementById('fecha').value;
+      const contrato = document.getElementById('contrato').value;
+      const nroParte = document.getElementById('nroParte').value;
+      const tipoCompra = document.getElementById('tipoCompra').value;
+      const descripcion = document.getElementById('descripcion').value;
+      const cantidad = parseInt(document.getElementById('cantidad').value) || 0;
+      const valorUnitario = parseFloat(document.getElementById('valorUnitario').value) || 0;
+      const proveedor = document.getElementById('proveedor').value;
+      const valorTotal = cantidad * valorUnitario;
+
+      if (!fecha || !contrato || !nroParte || !cantidad || !valorUnitario) {
+        alert('Completa fecha, contrato, N° parte, cantidad y valor unitario.');
+        return;
+      }
+
+      if (editingId) {
+        const idx = compras.findIndex(c => c.id === editingId);
+        if (idx !== -1) {
+          compras[idx] = { id: editingId, fecha, contrato, nroParte, tipoCompra, descripcion, cantidad, valorUnitario, valorTotal, proveedor };
+        }
+      } else {
+        const id = Date.now().toString();
+        compras.push({ id, fecha, contrato, nroParte, tipoCompra, descripcion, cantidad, valorUnitario, valorTotal, proveedor });
+      }
+
+      save();
+      updateTable();
+      resetFormEditing();
+    }
+
+    function onRowClick(e) {
+      const tr = e.target.closest('tr');
+      if (!tr || !tr.dataset.id) return;
+      const id = tr.dataset.id;
+      const compra = compras.find(c => c.id === id);
+      if (!compra) return;
+
+      editingId = id;
+      document.getElementById('fecha').value = compra.fecha;
+      document.getElementById('contrato').value = compra.contrato;
+      document.getElementById('nroParte').value = compra.nroParte;
+      document.getElementById('tipoCompra').value = compra.tipoCompra || 'Repuesto';
+      document.getElementById('descripcion').value = compra.descripcion || '';
+      document.getElementById('cantidad').value = compra.cantidad;
+      document.getElementById('valorUnitario').value = compra.valorUnitario;
+      document.getElementById('proveedor').value = compra.proveedor || '';
+
+      document.getElementById('btn-guardar').textContent = '💾 Guardar cambios';
+      document.getElementById('btn-cancelar-edicion').style.display = 'inline-flex';
+    }
+
+    function exportExcel() {
+      if (!compras.length) {
+        alert('No hay datos para exportar.');
+        return;
+      }
+      const list = getFilteredList();
+      if (!list.length) {
+        alert('No hay datos para exportar con los filtros actuales.');
+        return;
+      }
+      let csv = 'Fecha;Contrato;NroParte;Descripcion;Cantidad;ValorUnitario;ValorTotal;Proveedor;Tipo\n';
+      list.forEach(c => {
+        csv += `${c.fecha};${c.contrato};${c.nroParte};${(c.descripcion || '').replace(/;/g, ',')};${c.cantidad};${c.valorUnitario};${c.valorTotal};${(c.proveedor || '').replace(/;/g, ',')};${c.tipoCompra || ''}\n`;
+      });
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'compras_repuestos.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function exportPDF() {
+      const list = getFilteredList();
+      if (!list.length) {
+        alert('No hay datos para exportar a PDF con los filtros actuales.');
+        return;
+      }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 10;
+      doc.setFontSize(14);
+      doc.text('Compras y Repuestos – Xtreme', 10, y); y += 8;
+      doc.setFontSize(10);
+
+      const total = list.reduce((a,b)=>a + (b.valorTotal || 0), 0);
+      doc.text(`Total registros: ${list.length}`, 10, y); y += 5;
+      doc.text(`Gasto total (filtrado): $${formatNumber(total)}`, 10, y); y += 8;
+
+      doc.text('Fecha   Contrato        N° Parte      Cant.  V. Total', 10, y); y += 5;
+      doc.line(10, y, 200, y); y += 3;
+
+      list.forEach(c => {
+        const linea = `${c.fecha}  ${c.contrato.slice(0,14).padEnd(14)}  ${c.nroParte.slice(0,10).padEnd(10)}  ${String(c.cantidad).padStart(3)}  $${formatNumber(c.valorTotal)}`;
+        doc.text(linea, 10, y);
+        y += 5;
+        if (y > 280) {
+          doc.addPage();
+          y = 10;
+        }
+      });
+
+      doc.save('compras_repuestos.pdf');
+    }
+
+    function clearAll() {
+      if (!confirm('¿Borrar todos los registros?')) return;
+      compras = [];
+      save();
+      updateTable();
+      resetFormEditing();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
       load();
-      document.getElementById('form-compra').addEventListener('submit',addCompra);
-      document.getElementById('btn-exportar').addEventListener('click',exportCSV);
-      document.getElementById('btn-borrar-todo').addEventListener('click',clearAll);
-      ['filtroDesde','filtroHasta','filtroTexto','filtroProveedor'].forEach(id=>{
-        document.getElementById(id).addEventListener('input',updateTable);
-      });
+      document.getElementById('form-compra').addEventListener('submit', onSubmitForm);
+      document.getElementById('btn-cancelar-edicion').addEventListener('click', resetFormEditing);
+      document.getElementById('btn-exportar-excel').addEventListener('click', exportExcel);
+      document.getElementById('btn-exportar-pdf').addEventListener('click', exportPDF);
+      document.getElementById('btn-borrar-todo').addEventListener('click', clearAll);
+
+      ['filtroDesde','filtroHasta','filtroContrato','filtroTexto','filtroProveedor']
+        .forEach(id => document.getElementById(id).addEventListener('input', updateTable));
+
+      document.getElementById('tabla-body').addEventListener('click', onRowClick);
+
       updateTable();
     });
   </script>
